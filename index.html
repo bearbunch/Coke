@@ -1,80 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="image.png">
-    <meta charset="UTF-8">
-    <title>Coke Order Form</title>
+<meta charset="UTF-8">
+<title>Coke Order Form</title>
 
-    <!-- EmailJS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f44336;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f44336;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
 
-        .order-box {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            width: 320px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
+.order-box {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 340px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
 
-        h2 {
-            text-align: center;
-            color: #c62828;
-        }
+h2 {
+    text-align: center;
+    color: #c62828;
+}
 
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
 
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
 
-        button {
-            margin-top: 20px;
-            width: 100%;
-            padding: 10px;
-            background: #c62828;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
 
-        button:hover {
-            background: #b71c1c;
-        }
-    </style>
+button {
+    flex: 1;
+    padding: 10px;
+    background: #c62828;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button.secondary {
+    background: #757575;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.additional-box {
+    display: none;
+    margin-top: 15px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+</style>
 </head>
+
 <body>
 
 <div class="order-box">
     <h2>Order Coke</h2>
 
     <label>Name</label>
-    <input type="text" id="name" required>
+    <input type="text" id="name">
 
     <label>Email</label>
-    <input type="email" id="email" required>
+    <input type="email" id="email">
 
     <label>Delivery Address</label>
-    <input type="text" id="location" placeholder="Enter delivery address" required>
+    <input type="text" id="location">
 
     <label>Cans of Coke</label>
     <input type="number" id="cans" min="0" value="0">
@@ -82,62 +97,105 @@
     <label>Boxes of Coke</label>
     <input type="number" id="boxes" min="0" value="0">
 
-    <button onclick="sendOrder()">Place Order</button>
+    <!-- Buttons -->
+    <div class="button-row">
+        <button onclick="sendOrder()">Place Order</button>
+        <button class="secondary" onclick="toggleAdditional()">Additional Products</button>
+    </div>
+
+    <!-- Additional Products Section -->
+    <div class="additional-box" id="additionalBox">
+        <label>
+            <input type="checkbox" id="canRemoval">
+            Can Removal (€0.00)
+        </label>
+
+        <label>
+            <input type="checkbox" id="boxRemoval">
+            Box Removal (€0.00)
+        </label>
+
+        <label>Recurring Delivery</label>
+        <select id="recurring">
+            <option value="">None</option>
+            <option>One Day</option>
+            <option>Two Day</option>
+            <option>Three Day</option>
+            <option>Four Day</option>
+            <option>Five Day</option>
+            <option>Six Day</option>
+            <option>One Week</option>
+            <option>Two Week</option>
+            <option>One Month</option>
+        </select>
+    </div>
 </div>
 
 <script>
-    // Initialize EmailJS
-    (function(){
-        emailjs.init("B_0j6Y68xHGMOWxqe");
-    })();
+emailjs.init("B_0j6Y68xHGMOWxqe");
 
-    // Function to generate random 7-digit number
-    function generateOrderID() {
-        return Math.floor(1000000 + Math.random() * 9000000); // 7-digit number
+function toggleAdditional() {
+    const box = document.getElementById("additionalBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+function generateOrderID() {
+    return Math.floor(1000000 + Math.random() * 9000000);
+}
+
+function sendOrder() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const cans = document.getElementById("cans").value;
+    const boxes = document.getElementById("boxes").value;
+
+    if (!name || !email || !location) {
+        alert("Please fill in all required fields.");
+        return;
     }
 
-    function sendOrder() {
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const location = document.getElementById("location").value.trim();
-        const cans = document.getElementById("cans").value;
-        const boxes = document.getElementById("boxes").value;
+    const orderID = generateOrderID();
 
-        if (!name || !email || !location) {
-            alert("Please fill in your name, email, and delivery address.");
-            return;
-        }
+    // Additional products logic
+    const canRemoval = document.getElementById("canRemoval").checked;
+    const boxRemoval = document.getElementById("boxRemoval").checked;
+    const recurring = document.getElementById("recurring").value;
 
-        const orderID = generateOrderID(); // Generate unique 7-digit order ID
+    let extra_info = "";
 
-        const params = {
-            to_name: name,
-            to_email: email,
-            order_cans: cans,
-            order_boxes: boxes,
-            ORDER__ID: orderID,
-            location: location
-        };
-
-        emailjs.send(
-            "service_4to5clm",        // Your EmailJS service ID
-            "template_u6d1ly9",       // Your EmailJS template ID
-            params
-        ).then(
-            function() {
-                alert(`Order placed! Your ORDER ID is ${orderID}. A confirmation email has been sent to you.`);
-                // Reset form
-                document.getElementById("name").value = "";
-                document.getElementById("email").value = "";
-                document.getElementById("location").value = "";
-                document.getElementById("cans").value = 0;
-                document.getElementById("boxes").value = 0;
-            },
-            function(error) {
-                alert("Failed to send confirmation: " + error.text);
-            }
-        );
+    if (canRemoval || boxRemoval || recurring) {
+        extra_info = `
+<h3>Additional Items</h3>
+${canRemoval ? "Can Removal – €0.00<br>" : ""}
+${boxRemoval ? "Box Removal – €0.00<br>" : ""}
+${recurring ? "Recurring Delivery: " + recurring + " – €0.00<br>" : ""}
+<hr>
+`;
     }
+
+    const params = {
+        to_name: name,
+        to_email: email,
+        order_cans: cans,
+        order_boxes: boxes,
+        location: location,
+        ORDER__ID: orderID,
+        extra_info: extra_info
+    };
+
+    emailjs.send(
+        "service_4to5clm",
+        "template_u6d1ly9",
+        params
+    ).then(() => {
+        alert("Order placed! ORDER ID: " + orderID);
+        location.reload();
+    }).catch(err => {
+        alert("Error sending order");
+        console.error(err);
+    });
+}
 </script>
 
 </body>
