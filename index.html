@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coke Order Form</title>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f44336;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .order-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 320px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            text-align: center;
+            color: #c62828;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #c62828;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="order-box">
+    <h2>Order Coke</h2>
+
+    <label>Name</label>
+    <input type="text" id="name" required>
+
+    <label>Email</label>
+    <input type="email" id="email" required>
+
+    <label>Cans of Coke</label>
+    <input type="number" id="cans" min="0" value="0">
+
+    <label>Boxes of Coke</label>
+    <input type="number" id="boxes" min="0" value="0">
+
+    <button onclick="sendOrder()">Place Order</button>
+</div>
+
+<script>
+    // Initialize EmailJS
+    (function(){
+        emailjs.init("B_0j6Y68xHGMOWxqe"); // Replace with your EmailJS public key
+    })();
+
+    function sendOrder() {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const cans = document.getElementById("cans").value;
+        const boxes = document.getElementById("boxes").value;
+
+        if (!name || !email) {
+            alert("Please fill in your name and email.");
+            return;
+        }
+
+        // Default order confirmation template variables
+        const params = {
+            to_name: name,
+            to_email: email,
+            order_cans: cans,
+            order_boxes: boxes
+        };
+
+        // Send using default order confirmation template
+        emailjs.send(
+            "service_4to5clm",         // Your EmailJS service ID
+            "template_lv2xv6a",           // Default order confirmation template ID
+            params
+        ).then(
+            function() {
+                alert("Order placed! A confirmation email has been sent to you.");
+                // Reset form
+                document.getElementById("name").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("cans").value = 0;
+                document.getElementById("boxes").value = 0;
+            },
+            function(error) {
+                alert("Failed to send confirmation: " + error.text);
+            }
+        );
+    }
+</script>
+
+</body>
+</html>
