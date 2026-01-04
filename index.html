@@ -72,6 +72,9 @@
     <label>Email</label>
     <input type="email" id="email" required>
 
+    <label>Delivery Address</label>
+    <input type="text" id="location" placeholder="Enter delivery address" required>
+
     <label>Cans of Coke</label>
     <input type="number" id="cans" min="0" value="0">
 
@@ -95,11 +98,12 @@
     function sendOrder() {
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
+        const location = document.getElementById("location").value.trim();
         const cans = document.getElementById("cans").value;
         const boxes = document.getElementById("boxes").value;
 
-        if (!name || !email) {
-            alert("Please fill in your name and email.");
+        if (!name || !email || !location) {
+            alert("Please fill in your name, email, and delivery address.");
             return;
         }
 
@@ -110,7 +114,8 @@
             to_email: email,
             order_cans: cans,
             order_boxes: boxes,
-            ORDER__ID: orderID
+            ORDER__ID: orderID,
+            location: location
         };
 
         emailjs.send(
@@ -123,6 +128,7 @@
                 // Reset form
                 document.getElementById("name").value = "";
                 document.getElementById("email").value = "";
+                document.getElementById("location").value = "";
                 document.getElementById("cans").value = 0;
                 document.getElementById("boxes").value = 0;
             },
