@@ -82,9 +82,9 @@
 </div>
 
 <script>
-    // Initialize EmailJS
+    // Initialize EmailJS with your public key
     (function(){
-        emailjs.init("B_0j6Y68xHGMOWxqe"); // Replace with your EmailJS public key
+        emailjs.init("B_0j6Y68xHGMOWxqe");
     })();
 
     function sendOrder() {
@@ -98,7 +98,6 @@
             return;
         }
 
-        // Default order confirmation template variables
         const params = {
             to_name: name,
             to_email: email,
@@ -106,10 +105,9 @@
             order_boxes: boxes
         };
 
-        // Send using default order confirmation template
         emailjs.send(
-            "service_4to5clm",         // Your EmailJS service ID
-            "template_u6d1ly9",           // Default order confirmation template ID
+            "service_4to5clm",        // Your EmailJS service ID
+            "template_u6d1ly9",       // Your EmailJS template ID
             params
         ).then(
             function() {
