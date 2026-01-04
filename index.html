@@ -82,10 +82,15 @@
 </div>
 
 <script>
-    // Initialize EmailJS with your public key
+    // Initialize EmailJS
     (function(){
         emailjs.init("B_0j6Y68xHGMOWxqe");
     })();
+
+    // Function to generate random 7-digit number
+    function generateOrderID() {
+        return Math.floor(1000000 + Math.random() * 9000000); // 7-digit number
+    }
 
     function sendOrder() {
         const name = document.getElementById("name").value.trim();
@@ -98,11 +103,14 @@
             return;
         }
 
+        const orderID = generateOrderID(); // Generate unique 7-digit order ID
+
         const params = {
             to_name: name,
             to_email: email,
             order_cans: cans,
-            order_boxes: boxes
+            order_boxes: boxes,
+            ORDER__ID: orderID
         };
 
         emailjs.send(
@@ -111,7 +119,7 @@
             params
         ).then(
             function() {
-                alert("Order placed! A confirmation email has been sent to you.");
+                alert(`Order placed! Your ORDER ID is ${orderID}. A confirmation email has been sent to you.`);
                 // Reset form
                 document.getElementById("name").value = "";
                 document.getElementById("email").value = "";
