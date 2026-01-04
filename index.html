@@ -159,25 +159,17 @@ function sendOrder() {
     const boxRemoval = document.getElementById("boxRemoval").checked;
     const recurring = document.getElementById("recurring").value;
 
-    // Four separate plain-text lines
-    let extra_info_one = "";
-    let extra_info_two = "";
-    let extra_info_three = "";
-    let extra_info_four = "";
+    // Build ONE plain-text line
+    let items = [];
 
-    let lineIndex = 0;
+    if (canRemoval) items.push("Can Removal");
+    if (boxRemoval) items.push("Box Removal");
+    if (recurring) items.push("Recurring Delivery: " + recurring);
 
-    function addLine(text) {
-        if (lineIndex === 0) extra_info_one = text;
-        else if (lineIndex === 1) extra_info_two = text;
-        else if (lineIndex === 2) extra_info_three = text;
-        else if (lineIndex === 3) extra_info_four = text;
-        lineIndex++;
+    let extra_info = "";
+    if (items.length > 0) {
+        extra_info = "Additional Items: " + items.join(", ");
     }
-
-    if (canRemoval) addLine("Can Removal");
-    if (boxRemoval) addLine("Box Removal");
-    if (recurring) addLine("Recurring Delivery: " + recurring);
 
     const params = {
         to_name: name,
@@ -186,10 +178,7 @@ function sendOrder() {
         order_cans: cans,
         order_boxes: boxes,
         ORDER__ID: orderID,
-        extra_info_one: extra_info_one,
-        extra_info_two: extra_info_two,
-        extra_info_three: extra_info_three,
-        extra_info_four: extra_info_four
+        extra_info: extra_info
     };
 
     emailjs.send(
