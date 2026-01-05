@@ -3,16 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Order Details</title>
-
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
 <style>
 body {
     font-family: Arial, sans-serif;
     background: #f5f5f5;
     padding: 30px;
 }
-
 .card {
     max-width: 600px;
     margin: auto;
@@ -21,26 +18,21 @@ body {
     border-radius: 14px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
-
 h2 {
     color: #c62828;
     border-bottom: 2px solid #eee;
     padding-bottom: 10px;
 }
-
 .section {
     margin-top: 20px;
 }
-
 .label {
     font-weight: bold;
     color: #555;
 }
-
 .value {
     margin-top: 5px;
 }
-
 .deliver-btn {
     margin-top: 30px;
     width: 100%;
@@ -52,7 +44,6 @@ h2 {
     cursor: pointer;
     font-weight: bold;
 }
-
 /* Popup */
 .popup {
     display: none;
@@ -62,20 +53,17 @@ h2 {
     justify-content: center;
     align-items: center;
 }
-
 .popup-box {
     background: white;
     padding: 20px;
     border-radius: 10px;
     width: 300px;
 }
-
 .popup-box input {
     width: 100%;
     padding: 8px;
     margin-top: 10px;
 }
-
 .popup-box button {
     margin-top: 10px;
     width: 100%;
@@ -83,7 +71,6 @@ h2 {
 }
 </style>
 </head>
-
 <body>
 
 <div class="card">
@@ -126,33 +113,28 @@ h2 {
 </div>
 
 <script>
-/* ================= EMAILJS ================= */
+/* ================= EMAILJS INIT ================= */
 emailjs.init("AEd_UQKUldIhnOa4j");
 
 /* ================= URL DATA ================= */
 const params = new URLSearchParams(window.location.search);
-
-function get(key) {
-    return params.get(key) || "";
-}
+function get(key) { return params.get(key) || ""; }
 
 document.getElementById("id").textContent = get("id");
 document.getElementById("name").textContent = get("name");
 document.getElementById("email").textContent = get("email");
 document.getElementById("location").textContent = get("location");
-
 document.getElementById("items").textContent =
     "Cans: " + (get("cans") || 0) +
     " | Boxes: " + (get("boxes") || 0);
-
 document.getElementById("extras").textContent =
     get("extras") || "None";
 
-const STORED_HASH =
-"999398ea71e0fec49a5551119a8f4ab7dc810e8ea942b47d102315290b043588
-";
+/* ================= PASSWORD HASH ================= */
+// SHA-256 hash of "bearbunch"
+const STORED_HASH = "999398ea71e0fec49a5551119a8f4ab7dc810e8ea942b47d102315290b043588";
 
-/* Popup controls */
+/* ================= POPUP LOGIC ================= */
 function openPopup() {
     document.getElementById("popup").style.display = "flex";
 }
@@ -160,7 +142,6 @@ function openPopup() {
 async function checkPassword() {
     const input = document.getElementById("password").value;
     const hash = await sha256(input);
-
     if (hash === STORED_HASH) {
         sendDeliveredEmail();
         alert("Delivery confirmation sent.");
@@ -174,12 +155,11 @@ async function sha256(text) {
     const data = new TextEncoder().encode(text);
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     return Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2, "0"))
+        .map(b => b.toString(16).padStart(2,"0"))
         .join("");
 }
 
-/* ================= EMAIL SEND ================= */
-
+/* ================= SEND DELIVERED EMAIL ================= */
 function sendDeliveredEmail() {
     const order_link = window.location.href;
 
@@ -191,17 +171,14 @@ function sendDeliveredEmail() {
             to_email: get("email"),
 
             ORDER__ID: get("id"),
-
             order_cans: get("cans"),
             order_boxes: get("boxes"),
-
             location: get("location"),
-
             extra_info: get("extras"),
-
             order_link: order_link
         }
-    );
+    ).then(() => console.log("Delivered email sent!"),
+           err => console.error("Error sending delivered email:", err));
 }
 </script>
 
