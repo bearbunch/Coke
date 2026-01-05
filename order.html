@@ -5,70 +5,17 @@
 <title>Order Details</title>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    padding: 30px;
-}
-.card {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 25px;
-    border-radius: 14px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-h2 {
-    color: #c62828;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-}
-.section {
-    margin-top: 20px;
-}
-.label {
-    font-weight: bold;
-    color: #555;
-}
-.value {
-    margin-top: 5px;
-}
-.deliver-btn {
-    margin-top: 30px;
-    width: 100%;
-    padding: 12px;
-    background: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-}
-/* Popup */
-.popup {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-}
-.popup-box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-}
-.popup-box input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 10px;
-}
-.popup-box button {
-    margin-top: 10px;
-    width: 100%;
-    padding: 8px;
-}
+body { font-family: Arial; background:#f5f5f5; padding:30px; }
+.card { max-width:600px; margin:auto; background:white; padding:25px; border-radius:14px; box-shadow:0 10px 20px rgba(0,0,0,0.2); }
+h2 { color:#c62828; border-bottom:2px solid #eee; padding-bottom:10px; }
+.section { margin-top:20px; }
+.label { font-weight:bold; color:#555; }
+.value { margin-top:5px; }
+.deliver-btn { margin-top:30px; width:100%; padding:12px; background:#2e7d32; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
+.popup { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
+.popup-box { background:white; padding:20px; border-radius:10px; width:300px; }
+.popup-box input { width:100%; padding:8px; margin-top:10px; }
+.popup-box button { margin-top:10px; width:100%; padding:8px; }
 </style>
 </head>
 <body>
@@ -76,34 +23,18 @@ h2 {
 <div class="card">
     <h2>Order Details</h2>
 
-    <div class="section">
-        <div class="label">Order ID</div>
-        <div class="value" id="id"></div>
-    </div>
-
-    <div class="section">
-        <div class="label">Customer</div>
+    <div class="section"><div class="label">Order ID</div><div class="value" id="id"></div></div>
+    <div class="section"><div class="label">Customer</div>
         <div class="value" id="name"></div>
         <div class="value" id="email"></div>
         <div class="value" id="location"></div>
     </div>
+    <div class="section"><div class="label">Items</div><div class="value" id="items"></div></div>
+    <div class="section"><div class="label">Additional Items</div><div class="value" id="extras"></div></div>
 
-    <div class="section">
-        <div class="label">Items</div>
-        <div class="value" id="items"></div>
-    </div>
-
-    <div class="section">
-        <div class="label">Additional Items</div>
-        <div class="value" id="extras"></div>
-    </div>
-
-    <button class="deliver-btn" onclick="openPopup()">
-        Mark as Delivered
-    </button>
+    <button class="deliver-btn" onclick="openPopup()">Mark as Delivered</button>
 </div>
 
-<!-- PASSWORD POPUP -->
 <div class="popup" id="popup">
     <div class="popup-box">
         <h3>Enter Password</h3>
@@ -113,72 +44,67 @@ h2 {
 </div>
 
 <script>
-/* ================= EMAILJS INIT ================= */
+// ================= EMAILJS =================
 emailjs.init("AEd_UQKUldIhnOa4j");
 
-/* ================= URL DATA ================= */
+// ================= URL DATA =================
 const params = new URLSearchParams(window.location.search);
-function get(key) { return params.get(key) || ""; }
 
-document.getElementById("id").textContent = get("id");
-document.getElementById("name").textContent = get("name");
-document.getElementById("email").textContent = get("email");
-document.getElementById("location").textContent = get("location");
-document.getElementById("items").textContent =
-    "Cans: " + (get("cans") || 0) +
-    " | Boxes: " + (get("boxes") || 0);
-document.getElementById("extras").textContent =
-    get("extras") || "None";
-
-/* ================= PASSWORD HASH ================= */
-// SHA-256 hash of "bearbunch"
-const STORED_HASH = "999398ea71e0fec49a5551119a8f4ab7dc810e8ea942b47d102315290b043588";
-
-/* ================= POPUP LOGIC ================= */
-function openPopup() {
-    document.getElementById("popup").style.display = "flex";
+function getParam(key){
+    const value = params.get(key);
+    return value ? decodeURIComponent(value) : "";
 }
 
-async function checkPassword() {
+// Fill the page fields
+document.getElementById("id").textContent = getParam("id");
+document.getElementById("name").textContent = getParam("name");
+document.getElementById("email").textContent = getParam("email");
+document.getElementById("location").textContent = getParam("location");
+document.getElementById("items").textContent =
+    "Cans: " + (getParam("cans")||0) + " | Boxes: " + (getParam("boxes")||0);
+document.getElementById("extras").textContent = getParam("extras") || "None";
+
+// ================= PASSWORD LOGIC =================
+const STORED_HASH = "999398ea71e0fec49a5551119a8f4ab7dc810e8ea942b47d102315290b043588";
+
+function openPopup() { document.getElementById("popup").style.display = "flex"; }
+
+async function checkPassword(){
     const input = document.getElementById("password").value;
     const hash = await sha256(input);
-    if (hash === STORED_HASH) {
+    if(hash === STORED_HASH){
         sendDeliveredEmail();
-        alert("Delivery confirmation sent.");
+        alert("Delivery confirmation sent!");
         document.getElementById("popup").style.display = "none";
     } else {
-        alert("Incorrect password.");
+        alert("Incorrect password!");
     }
 }
 
-async function sha256(text) {
+async function sha256(text){
     const data = new TextEncoder().encode(text);
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     return Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2,"0"))
-        .join("");
+        .map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
-/* ================= SEND DELIVERED EMAIL ================= */
-function sendDeliveredEmail() {
+// ================= SEND EMAIL =================
+function sendDeliveredEmail(){
     const order_link = window.location.href;
-
-    emailjs.send(
-        "service_sq46x9i",
-        "template_agchzfn",
-        {
-            to_name: get("name"),
-            to_email: get("email"),
-
-            ORDER__ID: get("id"),
-            order_cans: get("cans"),
-            order_boxes: get("boxes"),
-            location: get("location"),
-            extra_info: get("extras"),
-            order_link: order_link
-        }
-    ).then(() => console.log("Delivered email sent!"),
-           err => console.error("Error sending delivered email:", err));
+    const payload = {
+        to_name: getParam("name"),
+        to_email: getParam("email"),
+        ORDER__ID: getParam("id"),
+        order_cans: getParam("cans"),
+        order_boxes: getParam("boxes"),
+        location: getParam("location"),
+        extra_info: getParam("extras"),
+        order_link: order_link
+    };
+    console.log("EmailJS payload:", payload);
+    emailjs.send("service_sq46x9i","template_agchzfn",payload)
+        .then(()=>console.log("Delivered email sent"))
+        .catch(err=>console.error("EmailJS error:", err));
 }
 </script>
 
