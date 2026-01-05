@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Coke Order</title>
-
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <style>
@@ -52,13 +51,8 @@ button {
     cursor: pointer;
     font-weight: bold;
 }
-.order-btn {
-    background: #c62828;
-    color: white;
-}
-.extra-btn {
-    background: #eeeeee;
-}
+.order-btn { background: #c62828; color: white; }
+.extra-btn { background: #eeeeee; }
 .extra-box {
     display: none;
     margin-top: 15px;
@@ -67,7 +61,6 @@ button {
 }
 </style>
 </head>
-
 <body>
 
 <div class="card">
@@ -114,6 +107,7 @@ button {
 </div>
 
 <script>
+// ================= EMAILJS INIT =================
 emailjs.init("AEd_UQKUldIhnOa4j");
 
 function toggleExtras() {
@@ -137,18 +131,18 @@ function sendOrder() {
         return;
     }
 
+    // Extras
     let extras = [];
     if (document.getElementById("canRemoval").checked) extras.push("Can Removal");
     if (document.getElementById("boxRemoval").checked) extras.push("Box Removal");
     if (document.getElementById("recurring").value)
         extras.push("Recurring Delivery: " + document.getElementById("recurring").value);
 
-    let extra_info = extras.length
-        ? "Additional Items: " + extras.join(", ")
-        : "";
+    const extra_info = extras.length ? "Additional Items: " + extras.join(", ") : "";
 
     const ORDER__ID = generateOrderID();
 
+    // Build order link
     const order_link =
         "order.html" +
         "?id=" + encodeURIComponent(ORDER__ID) +
@@ -159,6 +153,7 @@ function sendOrder() {
         "&boxes=" + encodeURIComponent(order_boxes) +
         "&extras=" + encodeURIComponent(extra_info);
 
+    // Send EmailJS
     emailjs.send(
         "service_sq46x9i",
         "template_gbexubk",
@@ -172,9 +167,13 @@ function sendOrder() {
             extra_info: extra_info,
             order_link: order_link
         }
-    );
-
-    alert("Order placed!\nOrder ID: " + ORDER__ID);
+    ).then(() => {
+        alert("Order placed! Your Order ID: " + ORDER__ID);
+        console.log("Order link:", order_link);
+    }).catch(err => {
+        console.error("EmailJS error:", err);
+        alert("Failed to place order. Check console.");
+    });
 }
 </script>
 
