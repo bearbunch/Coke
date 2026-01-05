@@ -148,15 +148,9 @@ document.getElementById("items").textContent =
 document.getElementById("extras").textContent =
     get("extras") || "None";
 
-/* ================= PASSWORD LOGIC ================= */
-
-/*
-SHA-256 hash of the REAL password.
-Generate once using:
-console.log(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("YOURPASSWORD")))
-*/
 const STORED_HASH =
-"REPLACE_THIS_WITH_YOUR_SHA256_HASH";
+"999398ea71e0fec49a5551119a8f4ab7dc810e8ea942b47d102315290b043588
+";
 
 /* Popup controls */
 function openPopup() {
