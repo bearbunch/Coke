@@ -174,13 +174,20 @@ function sendOrder() {
         "service_6jp3uvk",
         "template_u6d1ly9",
         {
-            to_name: name,
-            to_email: email,
-            ORDER__ID: ORDER__ID,
-            order_cans: order_cans,
-            order_boxes: order_boxes,
-            extra_info: extra_info,
-            order_link: order_link   // hidden unless used in template
+          to_name: name,
+          to_email: email,
+
+          ORDER__ID: ORDER__ID,
+
+          order_cans: order_cans,
+          order_boxes: order_boxes,
+
+          location: location,
+
+          extra_info: extra_info,
+
+          order_link: order_link   // hidden unless used in template
+
         }
     );
 
