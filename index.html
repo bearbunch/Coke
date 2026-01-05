@@ -16,7 +16,6 @@ body {
     align-items: center;
     margin: 0;
 }
-
 .card {
     background: white;
     width: 380px;
@@ -24,18 +23,15 @@ body {
     border-radius: 14px;
     box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
-
 h2 {
     text-align: center;
     color: #c62828;
 }
-
 label {
     font-weight: bold;
     margin-top: 12px;
     display: block;
 }
-
 input, select {
     width: 100%;
     padding: 10px;
@@ -43,13 +39,11 @@ input, select {
     border-radius: 8px;
     border: 1px solid #ccc;
 }
-
 .buttons {
     display: flex;
     gap: 10px;
     margin-top: 20px;
 }
-
 button {
     flex: 1;
     padding: 12px;
@@ -58,16 +52,13 @@ button {
     cursor: pointer;
     font-weight: bold;
 }
-
 .order-btn {
     background: #c62828;
     color: white;
 }
-
 .extra-btn {
     background: #eeeeee;
 }
-
 .extra-box {
     display: none;
     margin-top: 15px;
@@ -123,7 +114,7 @@ button {
 </div>
 
 <script>
-emailjs.init("B_0j6Y68xHGMOWxqe");
+emailjs.init("AEd_UQKUldIhnOa4j");
 
 function toggleExtras() {
     const box = document.getElementById("extras");
@@ -138,12 +129,11 @@ function sendOrder() {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const location = document.getElementById("location").value.trim();
-
     const order_cans = document.getElementById("cans").value;
     const order_boxes = document.getElementById("boxes").value;
 
     if (!name || !email || !location) {
-        alert("Please fill all required fields");
+        alert("Please fill all required fields.");
         return;
     }
 
@@ -153,10 +143,9 @@ function sendOrder() {
     if (document.getElementById("recurring").value)
         extras.push("Recurring Delivery: " + document.getElementById("recurring").value);
 
-    let extra_info = "";
-    if (extras.length > 0) {
-        extra_info = "Additional Items: " + extras.join(", ");
-    }
+    let extra_info = extras.length
+        ? "Additional Items: " + extras.join(", ")
+        : "";
 
     const ORDER__ID = generateOrderID();
 
@@ -171,23 +160,17 @@ function sendOrder() {
         "&extras=" + encodeURIComponent(extra_info);
 
     emailjs.send(
-        "service_6jp3uvk",
-        "template_u6d1ly9",
+        "service_sq46x9i",
+        "template_gbexubk",
         {
-          to_name: name,
-          to_email: email,
-
-          ORDER__ID: ORDER__ID,
-
-          order_cans: order_cans,
-          order_boxes: order_boxes,
-
-          location: location,
-
-          extra_info: extra_info,
-
-          order_link: order_link   // hidden unless used in template
-
+            to_name: name,
+            to_email: email,
+            ORDER__ID: ORDER__ID,
+            order_cans: order_cans,
+            order_boxes: order_boxes,
+            location: location,
+            extra_info: extra_info,
+            order_link: order_link
         }
     );
 
