@@ -2,27 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Coke Order Form</title>
+<title>Coke Order</title>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <style>
 body {
     font-family: Arial, sans-serif;
-    background: #f44336;
+    background: linear-gradient(135deg, #e53935, #b71c1c);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     margin: 0;
 }
 
-.order-box {
+.card {
     background: white;
+    width: 380px;
     padding: 25px;
-    border-radius: 10px;
-    width: 360px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border-radius: 14px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
 
 h2 {
@@ -31,19 +31,20 @@ h2 {
 }
 
 label {
-    display: block;
-    margin-top: 10px;
     font-weight: bold;
+    margin-top: 12px;
+    display: block;
 }
 
 input, select {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    box-sizing: border-box;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
-.button-row {
+.buttons {
     display: flex;
     gap: 10px;
     margin-top: 20px;
@@ -51,67 +52,59 @@ input, select {
 
 button {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.order-btn {
     background: #c62828;
     color: white;
-    border: none;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 5px;
 }
 
-button.secondary {
-    background: #757575;
+.extra-btn {
+    background: #eeeeee;
 }
 
-button:hover {
-    opacity: 0.9;
-}
-
-.additional-box {
+.extra-box {
     display: none;
     margin-top: 15px;
+    padding-top: 15px;
     border-top: 1px solid #ddd;
-    padding-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="order-box">
+<div class="card">
     <h2>Order Coke</h2>
 
     <label>Name</label>
-    <input type="text" id="name">
+    <input id="name">
 
     <label>Email</label>
-    <input type="email" id="email">
+    <input id="email">
 
     <label>Delivery Address</label>
-    <input type="text" id="location">
+    <input id="location">
 
-    <label>Cans of Coke</label>
-    <input type="number" id="cans" min="0" value="0">
+    <label>Cans</label>
+    <input type="number" id="cans" value="0" min="0">
 
-    <label>Boxes of Coke</label>
-    <input type="number" id="boxes" min="0" value="0">
+    <label>Boxes</label>
+    <input type="number" id="boxes" value="0" min="0">
 
-    <div class="button-row">
-        <button onclick="">Sorry our servers are down they will be back up at 5:00</button>
-        <button class="secondary" onclick="toggleAdditional()">Additional Products</button>
+    <div class="buttons">
+        <button class="order-btn" onclick="sendOrder()">Place Order</button>
+        <button class="extra-btn" onclick="toggleExtras()">Additional Products</button>
     </div>
 
-    <div class="additional-box" id="additionalBox">
-        <label>
-            <input type="checkbox" id="canRemoval">
-            Can Removal
-        </label>
-
-        <label>
-            <input type="checkbox" id="boxRemoval">
-            Box Removal
-        </label>
+    <div class="extra-box" id="extras">
+        <label><input type="checkbox" id="canRemoval"> Can Removal</label>
+        <label><input type="checkbox" id="boxRemoval"> Box Removal</label>
 
         <label>Recurring Delivery</label>
         <select id="recurring">
@@ -132,8 +125,8 @@ button:hover {
 <script>
 emailjs.init("B_0j6Y68xHGMOWxqe");
 
-function toggleAdditional() {
-    const box = document.getElementById("additionalBox");
+function toggleExtras() {
+    const box = document.getElementById("extras");
     box.style.display = box.style.display === "block" ? "none" : "block";
 }
 
@@ -145,53 +138,53 @@ function sendOrder() {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const location = document.getElementById("location").value.trim();
-    const cans = document.getElementById("cans").value;
-    const boxes = document.getElementById("boxes").value;
+
+    const order_cans = document.getElementById("cans").value;
+    const order_boxes = document.getElementById("boxes").value;
 
     if (!name || !email || !location) {
-        alert("Please fill in all required fields.");
+        alert("Please fill all required fields");
         return;
     }
 
-    const orderID = generateOrderID();
-
-    const canRemoval = document.getElementById("canRemoval").checked;
-    const boxRemoval = document.getElementById("boxRemoval").checked;
-    const recurring = document.getElementById("recurring").value;
-
-    // Build ONE plain-text line
-    let items = [];
-
-    if (canRemoval) items.push("Can Removal");
-    if (boxRemoval) items.push("Box Removal");
-    if (recurring) items.push("Recurring Delivery: " + recurring);
+    let extras = [];
+    if (document.getElementById("canRemoval").checked) extras.push("Can Removal");
+    if (document.getElementById("boxRemoval").checked) extras.push("Box Removal");
+    if (document.getElementById("recurring").value)
+        extras.push("Recurring Delivery: " + document.getElementById("recurring").value);
 
     let extra_info = "";
-    if (items.length > 0) {
-        extra_info = "Additional Items: " + items.join(", ");
+    if (extras.length > 0) {
+        extra_info = "Additional Items: " + extras.join(", ");
     }
 
-    const params = {
-        to_name: name,
-        to_email: email,
-        location: location,
-        order_cans: cans,
-        order_boxes: boxes,
-        ORDER__ID: orderID,
-        extra_info: extra_info
-    };
+    const ORDER__ID = generateOrderID();
+
+    const order_link =
+        "order.html" +
+        "?id=" + encodeURIComponent(ORDER__ID) +
+        "&name=" + encodeURIComponent(name) +
+        "&email=" + encodeURIComponent(email) +
+        "&location=" + encodeURIComponent(location) +
+        "&cans=" + encodeURIComponent(order_cans) +
+        "&boxes=" + encodeURIComponent(order_boxes) +
+        "&extras=" + encodeURIComponent(extra_info);
 
     emailjs.send(
-        "service_4to5clm",
+        "service_6jp3uvk",
         "template_u6d1ly9",
-        params
-    ).then(() => {
-        alert("Order placed successfully.\nORDER ID: " + orderID);
-        location.reload();
-    }).catch(err => {
-        alert("Failed to send order.");
-        console.error(err);
-    });
+        {
+            to_name: name,
+            to_email: email,
+            ORDER__ID: ORDER__ID,
+            order_cans: order_cans,
+            order_boxes: order_boxes,
+            extra_info: extra_info,
+            order_link: order_link   // hidden unless used in template
+        }
+    );
+
+    alert("Order placed!\nOrder ID: " + ORDER__ID);
 }
 </script>
 
