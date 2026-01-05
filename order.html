@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Order Details</title>
 
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -38,6 +40,47 @@ h2 {
 .value {
     margin-top: 5px;
 }
+
+.deliver-btn {
+    margin-top: 30px;
+    width: 100%;
+    padding: 12px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Popup */
+.popup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+.popup-box input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+}
+
+.popup-box button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+}
 </style>
 </head>
 
@@ -67,26 +110,105 @@ h2 {
         <div class="label">Additional Items</div>
         <div class="value" id="extras"></div>
     </div>
+
+    <button class="deliver-btn" onclick="openPopup()">
+        Mark as Delivered
+    </button>
+</div>
+
+<!-- PASSWORD POPUP -->
+<div class="popup" id="popup">
+    <div class="popup-box">
+        <h3>Enter Password</h3>
+        <input type="password" id="password">
+        <button onclick="checkPassword()">Confirm</button>
+    </div>
 </div>
 
 <script>
+/* ================= EMAILJS ================= */
+emailjs.init("AEd_UQKUldIhnOa4j");
+
+/* ================= URL DATA ================= */
 const params = new URLSearchParams(window.location.search);
 
-function show(id, key) {
-    document.getElementById(id).textContent = params.get(key) || "—";
+function get(key) {
+    return params.get(key) || "";
 }
 
-show("id", "id");
-show("name", "name");
-show("email", "email");
-show("location", "location");
+document.getElementById("id").textContent = get("id");
+document.getElementById("name").textContent = get("name");
+document.getElementById("email").textContent = get("email");
+document.getElementById("location").textContent = get("location");
 
 document.getElementById("items").textContent =
-    "Cans: " + (params.get("cans") || 0) +
-    " | Boxes: " + (params.get("boxes") || 0);
+    "Cans: " + (get("cans") || 0) +
+    " | Boxes: " + (get("boxes") || 0);
 
 document.getElementById("extras").textContent =
-    params.get("extras") || "None";
+    get("extras") || "None";
+
+/* ================= PASSWORD LOGIC ================= */
+
+/*
+SHA-256 hash of the REAL password.
+Generate once using:
+console.log(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("YOURPASSWORD")))
+*/
+const STORED_HASH =
+"REPLACE_THIS_WITH_YOUR_SHA256_HASH";
+
+/* Popup controls */
+function openPopup() {
+    document.getElementById("popup").style.display = "flex";
+}
+
+async function checkPassword() {
+    const input = document.getElementById("password").value;
+    const hash = await sha256(input);
+
+    if (hash === STORED_HASH) {
+        sendDeliveredEmail();
+        alert("Delivery confirmation sent.");
+        document.getElementById("popup").style.display = "none";
+    } else {
+        alert("Incorrect password.");
+    }
+}
+
+async function sha256(text) {
+    const data = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+}
+
+/* ================= EMAIL SEND ================= */
+
+function sendDeliveredEmail() {
+    const order_link = window.location.href;
+
+    emailjs.send(
+        "service_sq46x9i",
+        "template_agchzfn",
+        {
+            to_name: get("name"),
+            to_email: get("email"),
+
+            ORDER__ID: get("id"),
+
+            order_cans: get("cans"),
+            order_boxes: get("boxes"),
+
+            location: get("location"),
+
+            extra_info: get("extras"),
+
+            order_link: order_link
+        }
+    );
+}
 </script>
 
 </body>
